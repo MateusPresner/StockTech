@@ -129,13 +129,22 @@ O projeto está organizado em duas partes principais: backend e frontend.
 ```text
 stocktech/
 │
+├── .mvn/
+│   └── wrapper/
+│
 ├── database/
 │   └── schema.sql
 │
 ├── frontend/
 │   ├── public/
 │   ├── src/
+│   │   ├── assets/
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
 │   ├── package.json
+│   ├── package-lock.json
 │   └── vite.config.js
 │
 ├── src/
@@ -145,11 +154,9 @@ stocktech/
 │   │   │       ├── config/
 │   │   │       ├── controller/
 │   │   │       ├── domain/
-│   │   │       ├── dto/
-│   │   │       ├── enums/
-│   │   │       ├── exception/
 │   │   │       ├── repository/
 │   │   │       ├── service/
+│   │   │       ├── GlobalExceptionHandler.java
 │   │   │       └── StocktechApplication.java
 │   │   │
 │   │   └── resources/
@@ -162,8 +169,11 @@ stocktech/
 │               │   └── ProdutoServiceTest.java
 │               └── StocktechApplicationTests.java
 │
+├── .gitignore
+├── mvnw
+├── mvnw.cmd
 ├── pom.xml
-└── README.md
+└── README.MD
 ```
 
 ### Organização do backend
@@ -174,9 +184,8 @@ O backend utiliza uma arquitetura em camadas, separando as responsabilidades:
 - **Service:** responsável por coordenar as operações e aplicar as regras de negócio.
 - **Domain:** contém as entidades principais da aplicação.
 - **Repository:** responsável pelo acesso e persistência dos dados utilizando Spring Data JPA.
-- **DTO:** utilizado para transportar dados entre as requisições e respostas da API.
 - **Config:** contém configurações necessárias para o funcionamento da aplicação.
-- **Exception:** responsável pelo tratamento de erros e exceções.
+- **GlobalExceptionHandler:** responsável pelo tratamento de erros e exceções.
 
 ## 8. Configuração do banco de dados
 
@@ -187,7 +196,7 @@ O StockTech utiliza o MySQL 8.0 como sistema gerenciador de banco de dados.
 1. Instale o MySQL Server.
 2. Instale e abra o MySQL Workbench.
 3. Conecte-se ao servidor MySQL.
-4. Abra o arquivo `database/schema.sql`.
+4. Abra o arquivo `database/schema.sql`, localizado na pasta principal do projeto.
 5. Execute o script SQL.
 6. Verifique se o banco de dados `stocktech` e suas três tabelas foram criados.
 
@@ -195,7 +204,7 @@ O script contém a criação das tabelas, chaves primárias, chaves estrangeiras
 
 ### Configuração da conexão
 
-No arquivo `src/main/resources/application.properties`, configure a conexão com o banco:
+No arquivo `src/main/resources/application.properties`, a conexão com o banco está configurada da seguinte forma:
 
 ```properties
 spring.application.name=stocktech
@@ -203,7 +212,7 @@ spring.application.name=stocktech
 spring.datasource.url=jdbc:mysql://localhost:3306/stocktech?useSSL=false&serverTimezone=America/Sao_Paulo&allowPublicKeyRetrieval=true
 
 spring.datasource.username=root
-spring.datasource.password=SUA_SENHA_DO_MYSQL
+spring.datasource.password=${DB_PASSWORD:}
 
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
@@ -212,7 +221,7 @@ spring.jpa.properties.hibernate.format_sql=true
 server.port=8080
 ```
 
-Substitua `SUA_SENHA_DO_MYSQL` pela senha configurada no MySQL Server do computador utilizado.
+A senha do MySQL é informada por uma variável de ambiente, evitando deixar credenciais pessoais diretamente no código.
 
 **Importante:** não compartilhe senhas reais ou credenciais pessoais no repositório.
 
@@ -227,7 +236,15 @@ Substitua `SUA_SENHA_DO_MYSQL` pela senha configurada no MySQL Server do computa
 
 ### Executando a aplicação
 
-Abra o terminal na pasta principal do projeto, onde está localizado o arquivo `pom.xml`, e execute:
+Abra o terminal na pasta principal do projeto, onde está localizado o arquivo `pom.xml`.
+
+No PowerShell, configure a senha do MySQL:
+
+```powershell
+$env:DB_PASSWORD="sua_senha_do_mysql"
+```
+
+Em seguida, execute o backend:
 
 ```powershell
 .\mvnw.cmd spring-boot:run
@@ -236,6 +253,8 @@ Abra o terminal na pasta principal do projeto, onde está localizado o arquivo `
 Após a inicialização, o backend estará disponível em:
 
 `http://localhost:8080`
+
+**Observação:** mantenha esse terminal aberto enquanto estiver utilizando o sistema.
 
 ## 10. Como executar o frontend
 
